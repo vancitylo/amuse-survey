@@ -1,3 +1,8 @@
+import pandas as pd
+import hvplot.pandas
+import holoviews as hv
+
+
 def price_sensitivity_meter(df, interpolate=False):
     # convert data from wide to long
     # calculate frequency of each price for each group
@@ -56,5 +61,53 @@ def price_sensitivity_meter(df, interpolate=False):
 
     print(f'Optimal Price: ${optimal}')
     print(f'Acceptable Price Range: ${lower_bound} to ${upper_bound}')
-
+    hv.extension('bokeh')
     return plot * lower_line * optimal_line * upper_line
+
+
+import csv
+
+
+def readcsv(name):
+    with open(name, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        too_cheap = []
+        cheap = []
+        too_expensive = []
+        expensive = []
+        header = True
+        for row in reader:
+            if header == True:
+                header = False
+                continue
+            values = row[0].split(",")
+            too_cheap.append(int(values[3]))
+            cheap.append(int(values[2]))
+            too_expensive.append(int(values[0]))
+            expensive.append(int(values[1]))
+        return {'Too Cheap': too_cheap,
+                'Cheap': cheap,
+                'Expensive': expensive,
+                'Too Expensive': too_expensive,
+                }
+
+
+prices = {
+    'Too Cheap': [100, 120, 200, 200, 300, 100, 100, 300, 100, 350, 340, 450, 100, 257, 109, 109, 280, 400, 250, 200],
+    'Cheap': [150, 200, 250, 300, 340, 190, 200, 350, 120, 360, 360, 460, 110, 388, 299, 129, 350, 410, 260, 240],
+    'Expensive': [400, 400, 450, 350, 400, 200, 300, 370, 180, 370, 490, 490, 130, 433, 399, 149, 400, 420, 270, 280],
+    'Too Expensive': [500, 480, 500, 400, 490, 300, 500, 380, 200, 380, 500, 500, 140, 499, 422, 199, 410, 430, 280,
+                      300],
+    }
+
+# df = pd.DataFrame(prices)
+# price_sensitivity_meter(df)
+
+pricesproded = readcsv('AmusePRoDed.csv')
+pricesproding = readcsv('AmusePRoDing.csv')
+pricesplusded = readcsv('AmusePlusDed.csv')
+pricesplusding = readcsv('AmusePlusDing.csv')
+
+
+df = pd.DataFrame(pricesproded)
+price_sensitivity_meter(df)
